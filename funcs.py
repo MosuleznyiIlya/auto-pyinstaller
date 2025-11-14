@@ -9,3 +9,5 @@ def add_file():
     if fp:
         ui.file_entry.delete(0, "end")
         ui.file_entry.insert(0, fp) 
+def start():
+    pass
