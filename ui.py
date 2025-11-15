@@ -2,13 +2,13 @@ from customtkinter import *
 import funcs
 
 def create_ui():
+    global file_entry, output_entry, notification_label
+
     app = CTk()
     app.title('Auto Pyinstaller')
     app.geometry('550x350')
-    
 
     ui_refs = {}
-
     use_noconsole = BooleanVar(value=True)
     use_onefile = BooleanVar(value=True)
     use_onedir = BooleanVar(value=False)
@@ -19,7 +19,7 @@ def create_ui():
     ui_refs['use_onedir'] = use_onedir
     ui_refs['use_windowed'] = use_windowed
 
-    frame = CTkFrame(app, fg_color="transparent")
+    frame = CTkFrame(app, fg_color='transparent')
     frame.grid(row=0, column=0, padx=10, pady=10)
 
     CTkLabel(frame, text='Add file:', font=('', 16)).grid(row=0, column=0, columnspan=2, pady=(5, 0))
@@ -40,9 +40,9 @@ def create_ui():
     CTkButton(frame, text='Start', command=lambda: funcs.start(ui_refs)).grid(row=4, column=0, columnspan=2, pady=10)
 
     CTkLabel(frame, text='Choose methods').grid(row=5, column=0, columnspan=2, pady=(10, 0))
-    options_frame = CTkFrame(frame, fg_color="transparent")
+    options_frame = CTkFrame(frame, fg_color='transparent')
     options_frame.grid(row=6, column=0, columnspan=2, pady=10)
-    options_frame.grid_columnconfigure((0,1,2,3), weight=1)
+    options_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
     CTkCheckBox(options_frame, text='No console', variable=use_noconsole).grid(row=0, column=0, padx=5, pady=5)
     CTkCheckBox(options_frame, text='One file', variable=use_onefile).grid(row=0, column=1, padx=5, pady=5)
