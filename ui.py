@@ -5,6 +5,7 @@ def create_ui():
     app = CTk()
     app.title('Auto Pyinstaller')
     app.geometry('550x350')
+    
 
     ui_refs = {}
 
@@ -18,7 +19,7 @@ def create_ui():
     ui_refs['use_onedir'] = use_onedir
     ui_refs['use_windowed'] = use_windowed
 
-    frame = CTkFrame(app)
+    frame = CTkFrame(app, fg_color="transparent")
     frame.grid(row=0, column=0, padx=10, pady=10)
 
     CTkLabel(frame, text='Add file:', font=('', 16)).grid(row=0, column=0, columnspan=2, pady=(5, 0))
@@ -39,7 +40,7 @@ def create_ui():
     CTkButton(frame, text='Start', command=lambda: funcs.start(ui_refs)).grid(row=4, column=0, columnspan=2, pady=10)
 
     CTkLabel(frame, text='Choose methods').grid(row=5, column=0, columnspan=2, pady=(10, 0))
-    options_frame = CTkFrame(frame)
+    options_frame = CTkFrame(frame, fg_color="transparent")
     options_frame.grid(row=6, column=0, columnspan=2, pady=10)
     options_frame.grid_columnconfigure((0,1,2,3), weight=1)
 
