@@ -45,7 +45,6 @@ def start_build_process(fp, output_folder, options):
     build_path = os.path.join(os.getcwd(), 'build')
     spec_file = f'{name}.spec'
 
-    # Динамический поиск Tcl/Tk через tkinter
     try:
         temp_root = Tk()
         tk_library = temp_root.tk.exprstring('$tcl_library')
