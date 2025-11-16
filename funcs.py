@@ -121,3 +121,24 @@ def start(ui_refs):
     }
 
     start_build_process(fp, output_folder, options)
+def add_icon(icon_entry):
+    if not icon_entry:
+        return
+    icon_path = filedialog.askopenfilename(filetypes=[('ICO files', '*.ico'), ('Все файлы', '*.*')])
+    if icon_path:
+        icon_entry.delete(0, 'end')
+        icon_entry.insert(0, icon_path)
+    if file_entry:
+        file_path = file_entry.get()
+        if file_path and os.path.isfile(file_path):
+            base, ext = os.path.splitext(file_path)
+            if ext.lower() == '.py':
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    lines = f.readlines()
+                icon_line = f"import sys\nsys._MEIPASS = '{os.path.dirname(icon_path)}'\n"
+                if icon_line not in lines:
+                    lines.insert(0, icon_line)
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        f.writelines(lines)
+                show_notification('Icon added to the script.')
+    
