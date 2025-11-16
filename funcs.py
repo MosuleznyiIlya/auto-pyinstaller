@@ -2,20 +2,20 @@ from tkinter import filedialog, Tk
 import subprocess
 import os
 import shutil
-import sys
 
 file_entry = None
 output_entry = None
 notification_label = None
 root = None
+save_name_entry = None
 
-def set_ui_refs(entry_file, entry_output, label, main_root):
-    global file_entry, output_entry, notification_label, root
+def set_ui_refs(entry_file, entry_output, label, main_root, entry_name):
+    global file_entry, output_entry, notification_label, root, save_name_entry
     file_entry = entry_file
     output_entry = entry_output
     notification_label = label
     root = main_root
-
+    save_name_entry = entry_name
 def add_file():
     if not file_entry:
         return
@@ -23,23 +23,30 @@ def add_file():
     if fp:
         file_entry.delete(0, 'end')
         file_entry.insert(0, fp)
-
 def choose_output_folder():
     if not output_entry:
         return
-    folder = filedialog.askdirectory(title='Выбери папку для сохранения .exe')
+    folder = filedialog.askdirectory(title='Select a folder to save .exe')
     if folder:
         output_entry.delete(0, 'end')
         output_entry.insert(0, folder)
-
 def show_notification(message):
     if notification_label and root:
         notification_label.configure(text=message)
         root.after(3000, lambda: notification_label.configure(text=''))
-
+def remove_dir_except_file(path, ignore_filename):
+    for root_dir, dirs, files in os.walk(path, topdown=False):
+        for name in files:
+            if name != ignore_filename:
+                os.remove(os.path.join(root_dir, name))
+        for name in dirs:
+            shutil.rmtree(os.path.join(root_dir, name), ignore_errors=True)
 def start_build_process(fp, output_folder, options):
-    filename = os.path.basename(fp)
-    name = os.path.splitext(filename)[0]
+    global save_name_entry
+    raw_name = save_name_entry.get().strip() if save_name_entry else ''
+    if not raw_name:
+        raw_name = os.path.splitext(os.path.basename(fp))[0]
+    name = os.path.splitext(raw_name)[0]
 
     dist_path = os.path.join(os.getcwd(), 'dist')
     build_path = os.path.join(os.getcwd(), 'build')
@@ -53,7 +60,7 @@ def start_build_process(fp, output_folder, options):
     except Exception:
         tcl_path = None
 
-    cmd = ['pyinstaller', fp]
+    cmd = ['pyinstaller', fp, '--name', name]
 
     if tcl_path:
         add_data = f'{tcl_path};tk'
@@ -71,36 +78,39 @@ def start_build_process(fp, output_folder, options):
     try:
         subprocess.run(cmd, check=True)
 
-        exe_path = os.path.join(dist_path, f'{name}.exe') if options.get('onefile') else os.path.join(dist_path, name, f'{name}.exe')
+        exe_path = (
+            os.path.join(dist_path, f'{name}.exe')
+            if options.get('onefile')
+            else os.path.join(dist_path, name, f'{name}.exe')
+        )
 
         if os.path.exists(exe_path):
             os.makedirs(output_folder, exist_ok=True)
             shutil.move(exe_path, os.path.join(output_folder, f'{name}.exe'))
 
-        for path in [dist_path, build_path, spec_file, '__pycache__']:
+        for path in [dist_path, build_path, '__pycache__']:
             if os.path.exists(path):
-                if os.path.isdir(path):
-                    shutil.rmtree(path, ignore_errors=True)
-                else:
-                    os.remove(path)
+                remove_dir_except_file(path, f'{name}.exe')
 
-        show_notification('Сборка завершена успешно! .exe сохранён')
+        if os.path.exists(spec_file):
+            os.remove(spec_file)
+
+        show_notification(f'Build complete! File: {name}.exe saved to {output_folder}')
 
     except subprocess.CalledProcessError:
-        show_notification('Ошибка при сборке!')
-
+        show_notification('Assembly error!')
 def start(ui_refs):
     if not file_entry:
         return
 
     fp = file_entry.get()
     if not fp:
-        show_notification('Укажи файл')
+        show_notification('Specify file to compile')
         return
 
     output_folder = output_entry.get() if output_entry else ''
     if not output_folder:
-        show_notification('Укажи папку сохранения')
+        show_notification('Specify save save')
         return
 
     options = {

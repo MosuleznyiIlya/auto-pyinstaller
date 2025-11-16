@@ -35,8 +35,6 @@ def create_ui():
     notification_label = CTkLabel(frame, text='', font=('', 14))
     notification_label.grid(row=8, column=0, columnspan=2, pady=10)
 
-    funcs.set_ui_refs(file_entry, output_entry, notification_label, app)
-
     CTkLabel(frame, text='EXE name', font=('', 16)).grid(row=4, column=0, columnspan=2, pady=(15, 0))
     save_name_entry = CTkEntry(frame, width=350)
     save_name_entry.grid(row=5, column=0, pady=5)
@@ -51,5 +49,7 @@ def create_ui():
     CTkCheckBox(options_frame, text='One file', variable=use_onefile).grid(row=0, column=1, padx=5, pady=5)
     CTkCheckBox(options_frame, text='One dir', variable=use_onedir).grid(row=0, column=2, padx=5, pady=5)
     CTkCheckBox(options_frame, text='Windowed', variable=use_windowed).grid(row=0, column=3, padx=5, pady=5)
+
+    funcs.set_ui_refs(file_entry, output_entry, notification_label, app, save_name_entry)
 
     app.mainloop()
